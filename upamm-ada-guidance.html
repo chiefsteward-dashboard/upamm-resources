@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPAMM — Accommodations & Leave Guidance</title>
+<style>
+  :root {
+    --navy: #1a2744;
+    --blue: #2d4a8a;
+    --lightblue: #4a7bc8;
+    --accent: #c8a84b;
+    --green: #2d7a4f;
+    --green-light: #e8f5ee;
+    --red: #8a2d2d;
+    --red-light: #fdf0f0;
+    --yellow: #7a6a2d;
+    --yellow-light: #fdf8e8;
+    --gray: #f4f5f7;
+    --border: #dde1ea;
+    --text: #1a1a2e;
+    --muted: #5a6080;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--gray);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy);
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  header .logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+  }
+  header p {
+    font-size: 12px;
+    color: #a0aac0;
+    margin-top: 2px;
+  }
+
+  .tab-bar {
+    background: var(--blue);
+    display: flex;
+    gap: 0;
+    padding: 0 24px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: #a0b8e0;
+    padding: 14px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: white; }
+  .tab-btn.active {
+    color: white;
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+  /* FLOWCHART */
+  .flow-intro {
+    background: var(--yellow-light);
+    border: 1px solid #e0d090;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .flow-intro strong { color: var(--yellow); }
+
+  .flow-node {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .flow-node.question { border-left: 4px solid var(--lightblue); }
+  .flow-node.answer-yes { border-left: 4px solid var(--green); background: var(--green-light); }
+  .flow-node.answer-no { border-left: 4px solid #c0c8d8; }
+  .flow-node.result-ada { border-left: 4px solid var(--blue); background: #eef2fa; }
+  .flow-node.result-fmla { border-left: 4px solid var(--green); background: var(--green-light); }
+  .flow-node.result-cba { border-left: 4px solid var(--accent); background: var(--yellow-light); }
+  .flow-node.result-multi { border-left: 4px solid var(--red); background: var(--red-light); }
+  .flow-node.result-pwdcra { border-left: 4px solid #7a2d7a; background: #f5eef5; }
+
+  .flow-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .flow-q { font-size: 15px; font-weight: 600; line-height: 1.5; }
+  .flow-sub { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  .flow-options {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .flow-btn {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .flow-btn:hover { border-color: var(--lightblue); background: #eef2fa; }
+  .flow-btn.selected-yes { background: var(--green); border-color: var(--green); color: white; }
+  .flow-btn.selected-no { background: var(--muted); border-color: var(--muted); color: white; }
+
+  .result-box {
+    background: white;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-top: 20px;
+    border: 2px solid var(--blue);
+  }
+  .result-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+  .result-box ul { padding-left: 18px; font-size: 14px; line-height: 1.8; }
+  .result-box .offices {
+    background: var(--gray);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .result-box .offices strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  .union-trigger {
+    background: var(--navy);
+    color: white;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+  .union-trigger h3 { font-size: 14px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .union-trigger ul { padding-left: 18px; font-size: 13px; line-height: 1.9; color: #d0d8f0; }
+  .union-trigger .contact { margin-top: 14px; font-size: 13px; color: var(--accent); font-weight: 600; }
+
+  .reset-btn {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+  .reset-btn:hover { border-color: var(--lightblue); color: var(--blue); }
+
+  .hidden { display: none; }
+
+  /* EXPLAINER */
+  .section-card {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header:hover { background: var(--gray); }
+  .section-badge {
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-ada { background: #dde8f8; color: var(--blue); }
+  .badge-fmla { background: var(--green-light); color: var(--green); }
+  .badge-pwdcra { background: #f0e8f8; color: #6a2d8a; }
+  .badge-cba { background: var(--yellow-light); color: var(--yellow); }
+  .badge-interactive { background: var(--red-light); color: var(--red); }
+
+  .section-title { font-size: 15px; font-weight: 600; flex: 1; }
+  .section-chevron { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+  .section-chevron.open { transform: rotate(90deg); }
+
+  .section-body {
+    padding: 0 20px 20px;
+    font-size: 14px;
+    line-height: 1.75;
+    display: none;
+  }
+  .section-body.open { display: block; }
+  .section-body h4 { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin: 16px 0 6px; }
+  .section-body ul { padding-left: 18px; margin-bottom: 10px; }
+  .section-body li { margin-bottom: 4px; }
+  .section-body .callout {
+    background: var(--yellow-light);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .section-body .callout.green {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+  .section-body .callout.red {
+    background: var(--red-light);
+    border-color: var(--red);
+  }
+
+  /* STEWARD REFERENCE */
+  .ref-section { margin-bottom: 28px; }
+  .ref-section h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+  }
+  .ref-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .ref-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
+  .ref-card ul { padding-left: 16px; }
+  .ref-card li { margin-bottom: 4px; }
+  .ref-card .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: 4px;
+    margin-bottom: 8px;
+  }
+  .tag-law { background: #dde8f8; color: var(--blue); }
+  .tag-proc { background: var(--yellow-light); color: var(--yellow); }
+  .tag-warn { background: var(--red-light); color: var(--red); }
+  .tag-tip { background: var(--green-light); color: var(--green); }
+
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  .ref-table th { background: var(--navy); color: white; padding: 8px 12px; text-align: left; font-size: 11px; letter-spacing: 0.5px; }
+  .ref-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:nth-child(even) td { background: var(--gray); }
+
+  .step-list { counter-reset: steps; padding: 0; list-style: none; }
+  .step-list li {
+    counter-increment: steps;
+    padding: 10px 10px 10px 44px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps);
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    background: var(--navy);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 600px) {
+    .tab-btn { padding: 12px 14px; font-size: 12px; }
+    .container { padding: 20px 16px; }
+    .flow-options { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">UPAMM — AFT Local 5297</div>
+    <h1>Accommodations &amp; Leave Guidance</h1>
+    <p>ADA · FMLA · Michigan PWDCRA · CBA Leave — Know your rights, know your options</p>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('flowchart')">🔀 Where Do I Start?</button>
+  <button class="tab-btn" onclick="switchTab('explainer')">📋 What Each Option Means</button>
+  <button class="tab-btn" onclick="switchTab('steward')">🗂 Steward Reference</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- TAB 1: FLOWCHART -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div id="tab-flowchart" class="tab-content active">
+<div class="container">
+
+  <div class="flow-intro">
+    <strong>Start here if you're unsure what to request or which office to contact.</strong><br>
+    Answer the questions below. You'll land on the right bucket — and know which offices to contact and when to loop in UPAMM.
+  </div>
+
+  <!-- Q1 -->
+  <div class="flow-node question" id="q1">
+    <div class="flow-label">Question 1</div>
+    <div class="flow-q">Are you dealing with a health condition, disability, or injury — your own or a qualifying family member's?</div>
+    <div class="flow-sub">This includes physical conditions, mental health conditions, chronic illness, pregnancy, or recovery from surgery or injury.</div>
+    <div class="flow-options">
+      <button class="flow-btn" onclick="answer('q1','yes')">Yes</button>
+      <button class="flow-btn" onclick="answer('q1','no')">No — it's something else</button>
+    </div>
+  </div>
+
+  <div id="q1-no-result" class="hidden">
+    <div class="result-box" style="border-color: var(--muted);">
+      <h3>This may not be an ADA/FMLA/leave situation.</h3>
+      <p style="font-size:14px; line-height:1.7;">If you're experiencing a workplace problem that isn't health-related — discipline, scheduling, contract violations, retaliation, workload concerns — contact UPAMM directly. That's a potential grievance, not a leave or accommodation issue.</p>
+      <div class="offices" style="margin-top:12px;"><strong>Contact</strong>chiefsteward@upamm.org</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="flow-node question hidden" id="q2">
+    <div class="flow-label">Question 2</div>
+    <div class="flow-q">Is this your own condition (not a family member's)?</div>
+    <div class="flow-sub">Family member conditions may qualify for FMLA leave but generally do not trigger ADA accommodation rights for you.</div>
+    <div class="flow-options">
+      <button class="flow-btn" onclick="answer('q2','yes')">Yes — my own condition</button>
+      <button class="flow-btn" onclick="answer('q2','no')">No — a family member's condition</button>
+    </div>
+  </div>
+
+  <div id="q2-no-result" class="hidden">
+    <div class="result-box" style="border-color: var(--green);">
+      <h3 style="color:var(--green);">This is likely an FMLA leave situation.</h3>
+      <p style="font-size:14px; line-height:1.7; margin-bottom:10px;">If you need time off to care for a spouse, child, or parent with a serious health condition, FMLA is the primary protection. ADA does not apply to family member conditions.</p>
+      <ul>
+        <li>You may take up to 12 weeks of unpaid, job-protected leave per year</li>
+        <li>You must have worked at U of M for 12+ months and 1,250+ hours in the past year</li>
+        <li>You can use intermittent leave (single days or blocks of time)</li>
+        <li>Check your CBA — UPAMM members may have additional paid leave provisions</li>
+      </ul>
+      <div class="offices">
+        <strong>Who to contact</strong>
+        HR Leave Specialist (HRSC) — 734-647-5538, option #4<br>
+        Fax documentation to: 734-936-9526
+      </div>
+    </div>
+    <div id="q2-no-union" class="union-trigger">
+      <h3>📞 Contact UPAMM if any of these are true</h3>
+      <ul>
+        <li>HR denies your FMLA request and you believe you qualify</li>
+        <li>You're disciplined for absences that should have been FMLA-covered</li>
+        <li>Your supervisor is pressuring you or making comments about your leave</li>
+        <li>You're unsure how FMLA interacts with your CBA leave provisions</li>
+      </ul>
+      <div class="contact">chiefsteward@upamm.org</div>
+    </div>
+    <button class="reset-btn" onclick="resetFlow()">↩ Start over</button>
+  </div>
+
+  <!-- Q3 -->
+  <div class="flow-node question hidden" id="q3">
+    <div class="flow-label">Question 3</div>
+    <div class="flow-q">Does your condition limit one or more of your daily life activities or your ability to do your job?</div>
+    <div class="flow-sub">This can include: concentrating, lifting, standing, communicating, sleeping, managing pain, emotional regulation, or performing specific clinical tasks. It does not have to be total or permanent.</div>
+    <div class="flow-options">
+      <button class="flow-btn" onclick="answer('q3','yes')">Yes</button>
+      <button class="flow-btn" onclick="answer('q3','no')">No / Not sure</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="flow-node question hidden" id="q4">
+    <div class="flow-label">Question 4</div>
+    <div class="flow-q">What are you primarily asking for?</div>
+    <div class="flow-sub">Choose the option that best fits your situation right now.</div>
+    <div class="flow-options" style="flex-direction:column; gap:8px;">
+      <button class="flow-btn" onclick="answer('q4','time')" style="text-align:left;">⏱ Time off or reduced schedule (continuous or intermittent)</button>
+      <button class="flow-btn" onclick="answer('q4','change')" style="text-align:left;">🔧 A change to how or where I work (schedule modification, equipment, duties, workspace)</button>
+      <button class="flow-btn" onclick="answer('q4','rtw')" style="text-align:left;">↩ I'm returning from leave and need modifications to come back</button>
+      <button class="flow-btn" onclick="answer('q4','both')" style="text-align:left;">Both — I need time off AND workplace changes</button>
+    </div>
+  </div>
+
+  <!-- Results for Q4 -->
+  <div id="result-time" class="hidden">
+    <div class="result-box" style="border-color: var(--green);">
+      <h3 style="color:var(--green);">🟢 This is primarily a Leave situation — FMLA + CBA + possibly ADA</h3>
+      <ul>
+        <li><strong>FMLA</strong> provides up to 12 weeks unpaid, job-protected leave for your own serious health condition</li>
+        <li><strong>Michigan PWDCRA</strong> provides similar state-level protection — applies to employers with 1+ employees (broader than federal)</li>
+        <li><strong>ADA</strong> may require leave as a reasonable accommodation even if FMLA doesn't apply or is exhausted</li>
+        <li><strong>CBA</strong> — check your contract for paid medical leave, sick leave, and short-term disability provisions that may run concurrently</li>
+        <li>Leave can often run concurrently (FMLA + CBA leave at the same time) — HR should tell you this upfront</li>
+      </ul>
+      <div class="offices">
+        <strong>Who to contact — in this order</strong>
+        1. HR Leave Specialist (HRSC) — 734-647-5538, option #4 — to initiate FMLA paperwork<br>
+        2. Work Connections — if your leave involves return-to-work planning or medical restrictions<br>
+        3. Your supervisor — for scheduling, but let HR lead the conversation
+      </div>
+    </div>
+    <div class="union-trigger">
+      <h3>📞 Contact UPAMM if any of these are true</h3>
+      <ul>
+        <li>HR denies your leave request</li>
+        <li>You're disciplined for time off before or during a leave request</li>
+        <li>HR isn't responding or is delaying your paperwork</li>
+        <li>You're being pressured to return before you're medically cleared</li>
+        <li>You're unsure how your CBA leave provisions interact with FMLA</li>
+        <li>You received an email like the one from HR about the "interactive process" and you're not sure what to do next</li>
+      </ul>
+      <div class="contact">chiefsteward@upamm.org</div>
+    </div>
+    <button class="reset-btn" onclick="resetFlow()">↩ Start over</button>
+  </div>
+
+  <div id="result-change" class="hidden">
+    <div class="result-box" style="border-color: var(--blue);">
+      <h3 style="color:var(--blue);">🔵 This is primarily an ADA Reasonable Accommodation situation</h3>
+      <ul>
+        <li><strong>ADA (federal)</strong> requires Michigan Medicine to provide reasonable accommodations for a qualified employee with a disability — unless it causes undue hardship</li>
+        <li><strong>Michigan PWDCRA (state)</strong> provides the same protection — and applies to employers of any size, with slightly broader definitions</li>
+        <li>You do <em>not</em> have to use a specific word ("accommodation," "ADA") — you just have to communicate that you have a condition and need a change at work</li>
+        <li>Michigan Medicine must engage in an <strong>interactive process</strong> — a back-and-forth discussion about what you need and what's possible. They can't just say no.</li>
+        <li>You have the right to have a union representative present during this process</li>
+      </ul>
+      <div class="offices">
+        <strong>Who to contact</strong>
+        HR Leave Specialist (HRSC) — 734-647-5538, option #4 — HR owns the ADA interactive process at Michigan Medicine<br>
+        Work Connections — may be involved if your accommodation involves RTW or medical restrictions<br><br>
+        <strong>Before responding to HR:</strong> Contact UPAMM. You have the right to have a steward present.
+      </div>
+    </div>
+    <div class="union-trigger">
+      <h3>📞 Contact UPAMM before responding to HR — and also if:</h3>
+      <ul>
+        <li>HR has contacted you about the "ADA interactive process"</li>
+        <li>HR denies your accommodation request or says no options are available</li>
+        <li>You're being offered an accommodation you don't think actually addresses your needs</li>
+        <li>You feel pressured to accept something that doesn't work for you</li>
+        <li>Your supervisor is involved in the accommodation discussion in ways that feel retaliatory</li>
+        <li>You're being asked to submit a provider note and you're not sure what to include</li>
+      </ul>
+      <div class="contact">chiefsteward@upamm.org</div>
+    </div>
+    <button class="reset-btn" onclick="resetFlow()">↩ Start over</button>
+  </div>
+
+  <div id="result-rtw" class="hidden">
+    <div class="result-box" style="border-color: var(--accent);">
+      <h3 style="color:var(--yellow);">🟡 This is a Return-to-Work + ADA Accommodation situation</h3>
+      <ul>
+        <li>When you return from medical leave with restrictions, <strong>ADA requires Michigan Medicine to consider reasonable accommodations</strong> to enable your return</li>
+        <li><strong>Work Connections</strong> manages the RTW process — but HR owns the accommodation piece. Both offices will be involved.</li>
+        <li>Michigan Medicine cannot require you to return "100%" if you can perform your essential job functions with accommodation</li>
+        <li>Your provider's work restrictions are not the same as an ADA accommodation request — but they often trigger one</li>
+        <li><strong>Michigan PWDCRA</strong> gives you parallel state-level rights</li>
+      </ul>
+      <div class="offices">
+        <strong>Who to contact</strong>
+        Work Connections — RTW coordination, medical restrictions review<br>
+        HR Leave Specialist (HRSC) — 734-647-5538, option #4 — ADA interactive process<br>
+        Your provider — updated restrictions letter for RTW<br><br>
+        <strong>Do not sign a RTW agreement without reviewing with UPAMM first.</strong>
+      </div>
+    </div>
+    <div class="union-trigger">
+      <h3>📞 Contact UPAMM before signing anything — and also if:</h3>
+      <ul>
+        <li>Work Connections or HR is pressuring a RTW timeline that feels too soon</li>
+        <li>Michigan Medicine says it cannot accommodate your restrictions</li>
+        <li>You're being offered a modified duty assignment that significantly changes your role</li>
+        <li>You're being told your position no longer exists</li>
+        <li>Any discipline has been issued related to your leave or RTW</li>
+      </ul>
+      <div class="contact">chiefsteward@upamm.org</div>
+    </div>
+    <button class="reset-btn" onclick="resetFlow()">↩ Start over</button>
+  </div>
+
+  <div id="result-both" class="hidden">
+    <div class="result-box" style="border-color: var(--red);">
+      <h3 style="color:var(--red);">🔴 This involves multiple overlapping protections — FMLA + ADA + PWDCRA + CBA</h3>
+      <p style="font-size:14px; margin-bottom:12px; line-height:1.7;">This is the most common and most complicated scenario. You may need time off <em>and</em> workplace changes — and different laws cover different parts of that.</p>
+      <ul>
+        <li><strong>FMLA</strong> covers the leave portion (up to 12 weeks, unpaid, job-protected)</li>
+        <li><strong>ADA</strong> covers the accommodation portion (workplace modifications, possibly including additional leave)</li>
+        <li><strong>PWDCRA</strong> gives you parallel state rights for both — and may apply even if FMLA doesn't</li>
+        <li><strong>CBA</strong> may provide paid leave that runs concurrently — and additional procedural rights</li>
+        <li>HR and Work Connections will both be involved — <strong>make sure they're communicating with each other, not just with you separately</strong></li>
+        <li>You have the right to a union representative in meetings about your accommodation or leave</li>
+      </ul>
+      <div class="offices">
+        <strong>Who to contact</strong>
+        HR Leave Specialist (HRSC) — 734-647-5538, option #4 — FMLA paperwork + ADA interactive process<br>
+        Work Connections — RTW coordination if applicable<br>
+        UPAMM — <strong>before</strong> your first meeting with either office
+      </div>
+    </div>
+    <div class="union-trigger">
+      <h3>📞 Contact UPAMM before you respond to anything — this situation needs steward support</h3>
+      <ul>
+        <li>You have the right to union representation in any meeting that could affect your employment</li>
+        <li>Overlapping leave and accommodation situations are frequently mishandled by employers</li>
+        <li>UPAMM can help you track timelines, document interactions, and ensure your rights are protected across all three tracks simultaneously</li>
+      </ul>
+      <div class="contact">chiefsteward@upamm.org</div>
+    </div>
+    <button class="reset-btn" onclick="resetFlow()">↩ Start over</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- TAB 2: EXPLAINER -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div id="tab-explainer" class="tab-content">
+<div class="container">
+
+  <p style="font-size:14px; color:var(--muted); margin-bottom:20px; line-height:1.6;">Tap any section to expand it. These are your rights as a UPAMM member at Michigan Medicine.</p>
+
+  <!-- ADA -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('ada')">
+      <span class="section-badge badge-ada">ADA</span>
+      <span class="section-title">Americans with Disabilities Act — Workplace Accommodations</span>
+      <span class="section-chevron" id="chevron-ada">▶</span>
+    </div>
+    <div class="section-body" id="body-ada">
+      <h4>What it covers</h4>
+      <p>The ADA requires Michigan Medicine to provide <strong>reasonable accommodations</strong> to employees with a qualifying disability — meaning a physical or mental condition that substantially limits a major life activity. This includes chronic conditions, mental health diagnoses, recovery from injury or surgery, and more.</p>
+
+      <h4>What "reasonable accommodation" means</h4>
+      <ul>
+        <li>Modified schedule or shift</li>
+        <li>Modified duties (temporary or permanent)</li>
+        <li>Remote work or hybrid arrangement</li>
+        <li>Equipment or assistive technology</li>
+        <li>A different workspace or reduced noise environment</li>
+        <li>Leave as an accommodation (beyond FMLA)</li>
+        <li>Reassignment to a vacant position as a last resort</li>
+      </ul>
+
+      <div class="callout">
+        <strong>You don't have to say "I need an ADA accommodation."</strong> You only have to communicate that you have a condition and need a change at work. HR is responsible for recognizing when the ADA applies.
+      </div>
+
+      <h4>The interactive process</h4>
+      <p>When you request an accommodation, Michigan Medicine must engage in a <strong>good-faith interactive process</strong> — a dialogue about what you need and what's possible. They must consider your request seriously. "We can't do that" is not an automatic answer.</p>
+      <ul>
+        <li>You have the right to have a union representative present at any meeting about your accommodation</li>
+        <li>Michigan Medicine can ask for documentation from your provider — but cannot demand your full medical records</li>
+        <li>The provider note should describe your functional limitations, not your diagnosis</li>
+        <li>Michigan Medicine must respond in a reasonable timeframe — indefinite delay is not acceptable</li>
+      </ul>
+
+      <div class="callout red">
+        <strong>Watch for:</strong> Being offered an "accommodation" that doesn't actually address your limitation, or being told the process requires you to accept whatever is offered. The interactive process is a negotiation, not a take-it-or-leave-it.
+      </div>
+
+      <h4>At Michigan Medicine</h4>
+      <p>HR Leave Specialist (HRSC) owns the ADA interactive process. Contact: <strong>734-647-5538, option #4</strong>. Fax documentation to: <strong>734-936-9526</strong>.</p>
+    </div>
+  </div>
+
+  <!-- FMLA -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('fmla')">
+      <span class="section-badge badge-fmla">FMLA</span>
+      <span class="section-title">Family and Medical Leave Act — Job-Protected Leave</span>
+      <span class="section-chevron" id="chevron-fmla">▶</span>
+    </div>
+    <div class="section-body" id="body-fmla">
+      <h4>What it covers</h4>
+      <p>FMLA provides up to <strong>12 weeks of unpaid, job-protected leave</strong> per year for qualifying reasons, including your own serious health condition or care for a qualifying family member.</p>
+
+      <h4>Eligibility requirements</h4>
+      <ul>
+        <li>Worked at U of M for at least 12 months</li>
+        <li>Worked at least 1,250 hours in the past 12 months</li>
+        <li>Your condition qualifies as a "serious health condition" (most do)</li>
+      </ul>
+
+      <h4>Key rights under FMLA</h4>
+      <ul>
+        <li>Your job — or an equivalent job — is protected while you're on leave</li>
+        <li>Your health benefits continue during leave</li>
+        <li>You can take leave intermittently (individual days, half-days, reduced schedule)</li>
+        <li>You cannot be disciplined or retaliated against for taking FMLA leave</li>
+        <li>FMLA leave can run concurrently with CBA sick/medical leave — ask HR about this upfront</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Intermittent FMLA is a real option.</strong> If your condition causes unpredictable flares, bad days, or medical appointments, you can apply for intermittent FMLA rather than taking a full block of leave. This protects those absences retroactively.
+      </div>
+
+      <h4>What FMLA does NOT cover</h4>
+      <ul>
+        <li>Paid leave — FMLA is unpaid (though CBA provisions may provide pay)</li>
+        <li>Conditions that don't qualify as "serious" under federal definition</li>
+        <li>Leave beyond 12 weeks (ADA may fill this gap)</li>
+      </ul>
+
+      <h4>At Michigan Medicine</h4>
+      <p>Contact HR Leave Specialist (HRSC) to initiate: <strong>734-647-5538, option #4</strong>. Allow 5–7 business days for review.</p>
+    </div>
+  </div>
+
+  <!-- PWDCRA -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('pwdcra')">
+      <span class="section-badge badge-pwdcra">PWDCRA</span>
+      <span class="section-title">Michigan Persons with Disabilities Civil Rights Act — State Protection</span>
+      <span class="section-chevron" id="chevron-pwdcra">▶</span>
+    </div>
+    <div class="section-body" id="body-pwdcra">
+      <h4>What it is</h4>
+      <p>Michigan's PWDCRA is the state-level companion to the ADA. It prohibits disability discrimination and requires reasonable accommodation — and in some ways it's <strong>broader than federal law</strong>.</p>
+
+      <h4>Where PWDCRA is broader than ADA</h4>
+      <ul>
+        <li>Applies to employers with <strong>1 or more employees</strong> (ADA requires 15+)</li>
+        <li>Broader definition of "disability" — does not require the condition to be substantially limiting in the same way</li>
+        <li>Covers conditions that are episodic or in remission</li>
+        <li>Includes protection against discrimination based on <strong>use of protected leave</strong></li>
+      </ul>
+
+      <div class="callout green">
+        <strong>Practical implication:</strong> If a federal ADA claim is uncertain (e.g., condition is borderline or intermittent), a PWDCRA claim may still be strong. UPAMM can help assess this.
+      </div>
+
+      <h4>At Michigan Medicine</h4>
+      <p>PWDCRA claims are filed with the Michigan Department of Civil Rights (MDCR). In practice, the same HR process applies — but if HR denies an accommodation and you believe PWDCRA applies, that's a union matter. Contact UPAMM.</p>
+    </div>
+  </div>
+
+  <!-- CBA -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('cba')">
+      <span class="section-badge badge-cba">CBA</span>
+      <span class="section-title">UPAMM Contract (CBA) — Negotiated Leave &amp; Protections</span>
+      <span class="section-chevron" id="chevron-cba">▶</span>
+    </div>
+    <div class="section-body" id="body-cba">
+      <h4>What the CBA adds</h4>
+      <p>Your collective bargaining agreement with Michigan Medicine provides leave and related rights that are <strong>in addition to</strong> — not instead of — federal and state law. CBA provisions often provide paid benefits where federal law only provides unpaid protection.</p>
+
+      <h4>Key CBA provisions to be aware of</h4>
+      <ul>
+        <li><strong>Medical leave of absence</strong> — terms and duration per contract</li>
+        <li><strong>Sick leave accrual and use</strong> — may run concurrently with FMLA</li>
+        <li><strong>Short-term disability</strong> — if applicable under your benefit plan</li>
+        <li><strong>Job protection during leave</strong> — CBA may provide additional protection beyond FMLA</li>
+        <li><strong>Return-to-work rights</strong> — contract language on restoration after leave</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Always ask HR:</strong> "Are my CBA leave provisions running concurrently with FMLA?" If they are, your paid leave covers the same period as FMLA — so you're not burning FMLA time separately. If HR doesn't address this, contact UPAMM.
+      </div>
+
+      <h4>What UPAMM can help with</h4>
+      <p>If Michigan Medicine is not applying CBA leave provisions correctly, or is treating a leave situation differently than the contract requires, that may be a grievable issue. Contact UPAMM before you accept any leave arrangement that doesn't feel right.</p>
+    </div>
+  </div>
+
+  <!-- Interactive Process -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('interactive')">
+      <span class="section-badge badge-interactive">⚠ Interactive Process</span>
+      <span class="section-title">The ADA Interactive Process — What It Really Means</span>
+      <span class="section-chevron" id="chevron-interactive">▶</span>
+    </div>
+    <div class="section-body" id="body-interactive">
+      <h4>What it is</h4>
+      <p>When you notify Michigan Medicine that you have a condition and need a change at work, HR is required by law to engage in an <strong>interactive process</strong> — a good-faith, back-and-forth discussion to identify an effective accommodation.</p>
+
+      <h4>What you'll typically receive</h4>
+      <p>An email or letter from an HR Leave Specialist asking for a provider note with:</p>
+      <ul>
+        <li>The nature of your condition</li>
+        <li>How it affects your ability to perform essential job functions</li>
+        <li>What restrictions exist</li>
+        <li>What accommodation is recommended</li>
+        <li>Expected duration</li>
+      </ul>
+
+      <div class="callout red">
+        <strong>Before you submit that provider note:</strong> Contact UPAMM. You have the right to understand what you're submitting, what Michigan Medicine will do with it, and what happens next. You also have the right to union representation in any follow-up meeting.
+      </div>
+
+      <h4>Your rights during the interactive process</h4>
+      <ul>
+        <li>Michigan Medicine must respond — they cannot ignore your request</li>
+        <li>They can request documentation, but <strong>cannot demand your full medical history</strong></li>
+        <li>They must consider your requested accommodation — but can propose alternatives</li>
+        <li>If they deny your request, they must explain why and what alternatives were considered</li>
+        <li>You can propose your own accommodation — you don't have to accept whatever is offered</li>
+        <li>You have the right to union representation at any meeting about your accommodation</li>
+      </ul>
+
+      <h4>What Work Connections does</h4>
+      <p>Work Connections is the U of M office that facilitates <strong>return-to-work</strong> planning for employees coming off medical leave. They work with your provider's restrictions to determine what modified duty or accommodation options exist. They are separate from HR but frequently involved in the same cases. If you're on leave and preparing to return, you'll likely hear from both.</p>
+
+      <div class="callout green">
+        <strong>Keep records of everything.</strong> Date every call, email, and meeting. Note who you spoke with and what was said. If something is agreed to verbally, follow up in writing: "As we discussed today, I understand that..." This documentation matters.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- TAB 3: STEWARD REFERENCE -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div id="tab-steward" class="tab-content">
+<div class="container">
+
+  <p style="font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.6;">Steward-side reference — law, definitions, employer obligations, and procedural steps. Michigan Medicine / U of M public employer context. PERA jurisdiction. Updated for PWDCRA + ADA + FMLA + CBA.</p>
+
+  <!-- COMPARISON TABLE -->
+  <div class="ref-section">
+    <h2>Quick Comparison — All Tracks</h2>
+    <div class="ref-card">
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Law / Track</th>
+            <th>What it requires</th>
+            <th>Who it covers</th>
+            <th>Employer: Michigan Medicine</th>
+            <th>Key trigger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ADA</strong> (federal)</td>
+            <td>Reasonable accommodation; no discrimination based on disability</td>
+            <td>Employees with disability substantially limiting major life activity; employers 15+</td>
+            <td>HR Leave Specialist owns interactive process; EEOC enforcement</td>
+            <td>Member notifies employer of condition + need for change</td>
+          </tr>
+          <tr>
+            <td><strong>PWDCRA</strong> (Michigan)</td>
+            <td>Same as ADA + broader disability definition; includes episodic/remission conditions</td>
+            <td>Employees with disability; employers 1+; broader definition than ADA</td>
+            <td>MDCR enforcement; same HR process as ADA</td>
+            <td>Same as ADA — but applies even when ADA threshold not met</td>
+          </tr>
+          <tr>
+            <td><strong>FMLA</strong> (federal)</td>
+            <td>12 wks unpaid, job-protected leave; continuation of benefits</td>
+            <td>12 mos tenure + 1,250 hrs; serious health condition or qualifying family reason</td>
+            <td>HR Leave Specialist; 5–7 business day response</td>
+            <td>Member requests leave or absence that qualifies</td>
+          </tr>
+          <tr>
+            <td><strong>CBA</strong></td>
+            <td>Paid leave provisions, job protection, RTW rights per contract</td>
+            <td>All UPAMM bargaining unit members</td>
+            <td>HR + Dept leadership; grievable if violated</td>
+            <td>Member uses sick/medical leave or requests LOA</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- OFFICES -->
+  <div class="ref-section">
+    <h2>Michigan Medicine Office Roles</h2>
+    <div class="ref-card">
+      <h3>HR Leave Specialist (HRSC)</h3>
+      <span class="tag tag-proc">Procedural</span>
+      <ul>
+        <li>Owns ADA interactive process for Michigan Medicine</li>
+        <li>Manages FMLA paperwork, eligibility determinations, and documentation requests</li>
+        <li>First point of contact for both leave and accommodation requests</li>
+        <li>Contact: 734-647-5538, option #4 | Fax: 734-936-9526</li>
+        <li>Response time: 5–7 business days per their own notice</li>
+      </ul>
+    </div>
+    <div class="ref-card">
+      <h3>Work Connections</h3>
+      <span class="tag tag-proc">Procedural</span>
+      <ul>
+        <li>Manages return-to-work coordination for employees coming off medical leave</li>
+        <li>Works with provider restrictions to identify modified duty or accommodation options</li>
+        <li>Interfaces between the clinical/medical side and the employment side</li>
+        <li>Typically engaged after or concurrent with HR Leave Specialist</li>
+        <li><strong>Key steward watch:</strong> Member may receive conflicting guidance from HR and Work Connections — document and escalate to UPAMM if this occurs</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EMPLOYER OBLIGATIONS -->
+  <div class="ref-section">
+    <h2>Employer Obligations — ADA Interactive Process</h2>
+    <div class="ref-card">
+      <span class="tag tag-law">ADA / PWDCRA</span>
+      <h3>What Michigan Medicine must do</h3>
+      <ul>
+        <li>Engage in a good-faith interactive process — they cannot simply deny without discussion</li>
+        <li>Consider the member's requested accommodation before proposing alternatives</li>
+        <li>Respond in a reasonable timeframe — indefinite delay = bad faith</li>
+        <li>Provide written denial with explanation if accommodation is refused</li>
+        <li>Document the process — steward should request this documentation</li>
+        <li>Keep medical information confidential — separate from personnel file</li>
+        <li>Not retaliate for requesting accommodation or leave</li>
+      </ul>
+    </div>
+    <div class="ref-card">
+      <span class="tag tag-warn">Watch for</span>
+      <h3>Common employer failures in ADA cases</h3>
+      <ul>
+        <li>Demanding full medical records rather than functional limitation documentation</li>
+        <li>Offering accommodation that doesn't address the actual limitation</li>
+        <li>"Undue hardship" claimed without analysis — requires specific evidence</li>
+        <li>Interactive process conducted only by email with no real discussion</li>
+        <li>Member placed on leave against their will instead of accommodated in place</li>
+        <li>HR and Work Connections giving conflicting guidance to the member</li>
+        <li>Accommodation tied to performance improvement or discipline timeline</li>
+        <li>Failure to reassign to vacant position as last resort when accommodation in current role not possible</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEWARD PROCEDURE -->
+  <div class="ref-section">
+    <h2>Steward Procedure — When a Member Comes to You</h2>
+    <div class="ref-card">
+      <span class="tag tag-proc">Step-by-step</span>
+      <ol class="step-list">
+        <li><strong>Listen and triage.</strong> What is the member asking for — time off, workplace changes, RTW modifications, or all of the above? Which track(s) apply? Use the flowchart to confirm.</li>
+        <li><strong>Document the intake.</strong> Date, member name, condition (general — do not record diagnosis), what HR/Work Connections has said, what the member has already submitted. Log in dashboard.</li>
+        <li><strong>Establish timeline.</strong> Has a deadline been given? (Common: HR gives 5–10 business days to submit provider documentation.) Note it. Deadline pressure is an employer tactic — members don't have to rush.</li>
+        <li><strong>Advise on provider documentation.</strong> The note should describe functional limitations and recommended accommodation — NOT diagnosis. Member should review with their provider before submitting. See documentation guidance below.</li>
+        <li><strong>Assert representation rights.</strong> If any meeting is scheduled with HR or Work Connections, advise the member to request steward presence before the meeting. Weingarten rights apply in this context.</li>
+        <li><strong>Monitor the employer's response.</strong> HR has a response obligation. If they go silent, that's a steward issue. Follow up on the member's behalf.</li>
+        <li><strong>Assess for grievance.</strong> If accommodation is denied without process, leave is denied without basis, or discipline occurs in connection with leave or accommodation, evaluate grievance options under the CBA.</li>
+        <li><strong>Loop in Chief Steward for complex cases.</strong> Multi-track (FMLA + ADA + CBA), RTW disputes, denial of accommodation, or any case involving potential PWDCRA claim.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- DOCUMENTATION GUIDANCE -->
+  <div class="ref-section">
+    <h2>Provider Documentation — What Should and Shouldn't Be in It</h2>
+    <div class="ref-card">
+      <span class="tag tag-tip">Member guidance</span>
+      <table class="ref-table">
+        <thead>
+          <tr><th>Include ✓</th><th>Do not include ✗</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Functional limitations (what the member cannot do or has difficulty doing)</td>
+            <td>Full diagnosis or ICD code — not required, may be more than necessary</td>
+          </tr>
+          <tr>
+            <td>How the condition affects essential job functions</td>
+            <td>Full treatment history or medication list</td>
+          </tr>
+          <tr>
+            <td>Specific work restrictions (e.g., no standing &gt;2 hours, no on-call, schedule modification needed)</td>
+            <td>Prognosis or detailed medical history</td>
+          </tr>
+          <tr>
+            <td>Recommended accommodation (provider can suggest — employer decides)</td>
+            <td>Any information the provider hasn't discussed with the member</td>
+          </tr>
+          <tr>
+            <td>Anticipated duration (start/end date, or "ongoing" if appropriate)</td>
+            <td>Information about conditions unrelated to the accommodation request</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- KEY DEFINITIONS -->
+  <div class="ref-section">
+    <h2>Key Legal Definitions</h2>
+    <div class="ref-card">
+      <h3>Disability (ADA)</h3>
+      <p>A physical or mental impairment that <strong>substantially limits</strong> one or more major life activities. Includes conditions in remission or episodic (e.g., MS, lupus, depression). Post-ADAAA, courts construe this broadly.</p>
+    </div>
+    <div class="ref-card">
+      <h3>Disability (PWDCRA)</h3>
+      <p>A determinable physical or mental characteristic that <strong>substantially limits</strong> one or more major life activities OR is regarded as such by the employer. Slightly broader than ADA — does not require the same substantiality threshold in all cases.</p>
+    </div>
+    <div class="ref-card">
+      <h3>Reasonable Accommodation</h3>
+      <p>Any modification or adjustment that enables a qualified employee to perform essential job functions, without causing undue hardship. Not required to be the member's preferred accommodation — but must be <em>effective</em>.</p>
+    </div>
+    <div class="ref-card">
+      <h3>Undue Hardship</h3>
+      <p>Significant difficulty or expense. Michigan Medicine (U of M) as a large public employer faces a <strong>high bar</strong> to claim undue hardship. Must show specific evidence — not just "it's inconvenient" or "it sets a precedent."</p>
+    </div>
+    <div class="ref-card">
+      <h3>Essential Job Functions</h3>
+      <p>The fundamental duties of the position — not marginal tasks. Job descriptions matter here, but aren't dispositive. What does the employee actually spend most of their time doing? Steward should request current job description as part of any ADA case.</p>
+    </div>
+    <div class="ref-card">
+      <h3>Interactive Process</h3>
+      <p>An informal dialogue between employer and employee (and union when present) to identify effective accommodations. Both parties must participate in good faith. Employer cannot conduct the process unilaterally by email only.</p>
+    </div>
+    <div class="ref-card">
+      <h3>Serious Health Condition (FMLA)</h3>
+      <p>An illness, injury, impairment, or physical or mental condition requiring inpatient care OR continuing treatment by a health care provider. Covers most conditions requiring more than 3 consecutive days of incapacity plus ongoing treatment.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── Tab switching ──────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Flowchart logic ────────────────────────────────────────────────
+const state = {};
+
+function answer(qid, val) {
+  state[qid] = val;
+
+  // Update button styles
+  const node = document.getElementById(qid);
+  node.querySelectorAll('.flow-btn').forEach(btn => {
+    btn.classList.remove('selected-yes', 'selected-no');
+  });
+  event.target.classList.add(val === 'yes' ? 'selected-yes' : 'selected-no');
+
+  // Hide all downstream nodes and results
+  hideAfter(qid);
+
+  // Route
+  if (qid === 'q1') {
+    if (val === 'no') {
+      show('q1-no-result');
+    } else {
+      show('q2');
+    }
+  } else if (qid === 'q2') {
+    if (val === 'no') {
+      show('q2-no-result');
+    } else {
+      show('q3');
+    }
+  } else if (qid === 'q3') {
+    if (val === 'yes') {
+      show('q4');
+    } else {
+      // Not sure / No — still may qualify, route to q4 with note
+      show('q4');
+    }
+  } else if (qid === 'q4') {
+    const map = { time: 'result-time', change: 'result-change', rtw: 'result-rtw', both: 'result-both' };
+    if (map[val]) show(map[val]);
+  }
+}
+
+function hideAfter(qid) {
+  const order = ['q1', 'q1-no-result', 'q2', 'q2-no-result', 'q3', 'q4', 'result-time', 'result-change', 'result-rtw', 'result-both'];
+  const idx = order.indexOf(qid);
+  for (let i = idx + 1; i < order.length; i++) {
+    const el = document.getElementById(order[i]);
+    if (el) el.classList.add('hidden');
+  }
+}
+
+function show(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('hidden');
+}
+
+function resetFlow() {
+  const ids = ['q1-no-result','q2','q2-no-result','q3','q4','result-time','result-change','result-rtw','result-both'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+  document.querySelectorAll('.flow-btn').forEach(btn => {
+    btn.classList.remove('selected-yes','selected-no');
+  });
+  Object.keys(state).forEach(k => delete state[k]);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Accordion (explainer) ──────────────────────────────────────────
+function toggleSection(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chevron-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+</script>
+
+</body>
+</html>
