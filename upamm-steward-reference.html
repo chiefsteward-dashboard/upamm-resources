@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPAMM — Steward Reference</title>
+<style>
+  :root{
+    --navy:#1a2744; --blue:#2d4a8a; --lightblue:#4a7bc8; --accent:#c8a84b;
+    --green:#2d7a4f; --green-light:#e8f5ee; --red:#8a2d2d; --red-light:#fdf0f0;
+    --yellow:#7a6a2d; --yellow-light:#fdf8e8; --gray:#f4f5f7; --border:#dde1ea;
+    --text:#1a1a2e; --muted:#5a6080; --white:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;line-height:1.55}
+  a{color:var(--blue)}
+
+  header{background:var(--navy);color:#fff;padding:18px 22px}
+  header .logo{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+  header h1{font-size:19px;font-weight:600;color:#fff;margin-top:4px}
+  header p{font-size:12px;color:#a0aac0;margin-top:4px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .toolbar button{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:12px;padding:7px 12px;border-radius:6px;cursor:pointer;font-family:inherit}
+  .toolbar button:hover{background:rgba(255,255,255,0.2)}
+
+  .container{max-width:900px;margin:0 auto;padding:22px 18px 90px}
+
+  /* Urgent banner */
+  .urgent{display:block;background:var(--red-light);border:1.5px solid var(--red);border-left:5px solid var(--red);border-radius:10px;padding:14px 18px;margin-bottom:22px;text-decoration:none;color:var(--text)}
+  .urgent b{color:var(--red);display:block;font-size:14px;margin-bottom:3px}
+  .urgent span{font-size:13.5px}
+  .urgent .go{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--red)}
+
+  /* TOC */
+  .toc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:24px}
+  .toc h2{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:10px 0 8px}
+  .toc h2:first-child{margin-top:0}
+  .toc ul{list-style:none}
+  .toc li{margin-bottom:2px}
+  .toc a{display:block;padding:8px 10px;border-radius:6px;color:var(--blue);text-decoration:none;font-size:14px}
+  .toc a:hover{background:#eef2fa}
+  .toc a .n{color:var(--muted);font-weight:700;margin-right:8px}
+  .toc a .u{color:var(--red);font-weight:700;font-size:11px;margin-left:6px}
+
+  /* Sections as accordions */
+  details.sec{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden;scroll-margin-top:12px}
+  details.sec > summary{list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:var(--navy)}
+  details.sec > summary::-webkit-details-marker{display:none}
+  details.sec > summary .num{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:1px}
+  details.sec > summary .chev{margin-left:auto;color:var(--muted);font-size:13px;transition:transform .15s}
+  details.sec[open] > summary .chev{transform:rotate(90deg)}
+  details.sec > summary .urgent-tag{font-size:10px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--red);padding:2px 8px;border-radius:99px}
+  .sec-body{padding:0 20px 20px;border-top:1px solid var(--border)}
+  .sec-body > *:first-child{margin-top:14px}
+
+  .kicker{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+  p{font-size:14px;margin-bottom:10px}
+  ul,ol.steps{margin:6px 0 12px 20px;font-size:14px}
+  li{margin-bottom:6px}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:#f0f2f6;padding:1px 6px;border-radius:4px}
+
+  .callout{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13.5px}
+  .callout.blue{background:#eef2fa;border-left:4px solid var(--blue)}
+  .callout.green{background:var(--green-light);border-left:4px solid var(--green)}
+  .callout.red{background:var(--red-light);border-left:4px solid var(--red)}
+  .callout.gold{background:var(--yellow-light);border-left:4px solid var(--accent)}
+  .callout strong{display:block;margin-bottom:3px}
+
+  .copyrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border)}
+  .copyrow:last-child{border-bottom:none}
+  .copyrow .cname{font-weight:600;font-size:14px;flex:1;min-width:180px}
+  .copyrow .cval{font-family:ui-monospace,monospace;font-size:12.5px;color:var(--blue)}
+  .copybtn{background:#eef2fa;border:1px solid var(--border);color:var(--blue);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:inherit}
+  .copybtn:active{background:var(--blue);color:#fff}
+
+  .rights{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:10px}
+  .right-card{border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:8px;padding:14px 16px;background:#fbfcfe}
+  .right-card h3{font-size:14px;color:var(--navy);margin-bottom:4px}
+  .right-card .cite{font-size:11px;color:var(--muted);font-style:italic;margin-bottom:6px}
+  .right-card p{font-size:13px;margin-bottom:8px}
+  .right-card .do{font-size:12.5px;background:var(--green-light);border-radius:6px;padding:7px 10px;margin-bottom:0}
+  .right-card .do b{color:var(--green)}
+
+  .mistakes{counter-reset:m;list-style:none;margin-left:0}
+  .mistakes li{counter-increment:m;position:relative;padding:8px 0 8px 34px;border-bottom:1px solid var(--border);font-size:14px}
+  .mistakes li:last-child{border-bottom:none}
+  .mistakes li::before{content:counter(m);position:absolute;left:0;top:8px;width:22px;height:22px;background:var(--red);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+  #totop{position:fixed;right:16px;bottom:16px;background:var(--navy);color:#fff;border:none;border-radius:99px;padding:10px 15px;font-size:13px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.25);opacity:0;pointer-events:none;transition:opacity .2s;font-family:inherit}
+  #totop.show{opacity:1;pointer-events:auto}
+
+  footer{max-width:900px;margin:0 auto;padding:8px 18px 40px;font-size:11.5px;color:var(--muted)}
+
+  @media(max-width:600px){
+    .container{padding:16px 12px 70px}
+    details.sec > summary{font-size:15px;padding:15px 16px}
+    .sec-body{padding:0 16px 18px}
+  }
+  @media print{
+    body{background:#fff}
+    .toolbar,#totop,.urgent .go{display:none}
+    header{background:#fff;color:#000;border-bottom:2px solid #000}
+    header h1,header .logo{color:#000}
+    .toc{display:none}
+    details.sec{border:none;border-bottom:1px solid #999;border-radius:0;page-break-inside:avoid}
+    details.sec > summary .chev{display:none}
+    .sec-body{display:block !important}
+    a{color:#000;text-decoration:none}
+  }
+</style>
+</head>
+<body id="top">
+<header>
+  <div class="logo">UPAMM · United Physician Assistants of Michigan Medicine · AFT Local 5297</div>
+  <h1>Steward Reference</h1>
+  <p>Everyday steward workflows, member intake, and rights at a glance · Last updated 2 July 2026</p>
+  <div class="toolbar">
+    <button onclick="setAll(true)">Expand all</button>
+    <button onclick="setAll(false)">Collapse all</button>
+    <button onclick="printPage()">🖨 Print</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <a class="urgent" href="#s4">
+    <b>⚠ Is a member being called into a discipline or investigatory meeting right now?</b>
+    <span>They have the right to a steward present — <strong>but they have to ask for it.</strong> Don't let them go in alone.</span>
+    <span class="go">→ Go to: Discipline meeting &amp; your rights</span>
+  </a>
+
+  <nav class="toc">
+    <h2>Start here</h2>
+    <ul>
+      <li><a href="#s1"><span class="n">1</span>What this system is</a></li>
+      <li><a href="#s2"><span class="n">2</span>Getting into the dashboard</a></li>
+    </ul>
+    <h2>When something comes up</h2>
+    <ul>
+      <li><a href="#s3"><span class="n">3</span>A member comes to you with a problem</a></li>
+      <li><a href="#s4"><span class="n">4</span>A member is called into a discipline meeting<span class="u">URGENT</span></a></li>
+      <li><a href="#s5"><span class="n">5</span>Raising a staffing / safety concern</a></li>
+      <li><a href="#s6"><span class="n">6</span>Filing a formal grievance</a></li>
+      <li><a href="#s7"><span class="n">7</span>Logging a workload review</a></li>
+      <li><a href="#s8"><span class="n">8</span>Tracking a contractual deadline</a></li>
+      <li><a href="#s9"><span class="n">9</span>Logging a meeting</a></li>
+    </ul>
+    <h2>How the forms &amp; concerns work</h2>
+    <ul>
+      <li><a href="#s10"><span class="n">10</span>Send the form, or fill it yourself?</a></li>
+      <li><a href="#s11"><span class="n">11</span>What counts as a staffing / safety concern</a></li>
+      <li><a href="#s12"><span class="n">12</span>Forms &amp; links</a></li>
+    </ul>
+    <h2>Rights &amp; rules</h2>
+    <ul>
+      <li><a href="#s13"><span class="n">13</span>Your rights &amp; the member's</a></li>
+      <li><a href="#s14"><span class="n">14</span>HIPAA hard stops</a></li>
+    </ul>
+    <h2>Good practice</h2>
+    <ul>
+      <li><a href="#s15"><span class="n">15</span>Data hygiene — dashboard vs. Drive</a></li>
+      <li><a href="#s16"><span class="n">16</span>Common mistakes</a></li>
+      <li><a href="#s17"><span class="n">17</span>Contacts</a></li>
+    </ul>
+  </nav>
+
+  <details class="sec" id="s1" open>
+    <summary><span class="num">01</span> What this system is <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>The UPAMM Dashboard is the single system of record for representation work: member intake, staffing/safety concerns, grievances and workload reviews, contractual deadlines, obligations owed in both directions, and meeting notes. Everything a steward opens, tracks, or resolves lives in the dashboard so the whole steward team works from the same picture and nothing falls through the cracks.</p>
+    </div>
+  </details>
+
+  <details class="sec" id="s2" open>
+    <summary><span class="num">02</span> Getting into the dashboard <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>The dashboard is at <a href="https://upamm-dashboard.pages.dev" target="_blank">upamm-dashboard.pages.dev</a>. Sign in with your <strong>@upamm.org</strong> Google account.</p>
+      <div class="callout blue"><strong>Need access?</strong> Contact the Chief Steward to be added. If a browser gives you a login loop, use Microsoft Edge or Chrome (some Safari privacy settings block sign-in).</div>
+      <p>Bookmark it on your phone — most intake happens in the moment, on the unit.</p>
+    </div>
+  </details>
+
+  <details class="sec" id="s3" open>
+    <summary><span class="num">03</span> A member comes to you with a problem <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>This is the front door. However the contact comes in — form, email, group message, or a hallway conversation:</p>
+      <ol class="steps">
+        <li><strong>Assign the next case number.</strong> Assign <code>P##-YYYY — LastName</code> (Pending) at first contact.</li>
+        <li><strong>Create the case folder</strong> in <em>Pending</em> with its standard subfolders.</li>
+        <li><strong>Log the intake</strong> in the dashboard — record the source and the initial issue.</li>
+        <li><strong>Decide the track</strong> and move the case: needs a formal filing → <code>G##</code> Grievance; resolved informally → <code>I##</code> Informal; MERC/PERA route → <code>U##</code>; no further action → close as <code>P##</code>.</li>
+      </ol>
+      <div class="callout blue">The number is assigned once and never changes. When the track is decided, the folder is renamed and moved — but it keeps its number.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s4" open>
+    <summary><span class="num">04</span> A member is called into a discipline meeting <span class="urgent-tag">URGENT</span> <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>If a member is called into a meeting that could lead to discipline, this is time-sensitive — act right away.</p>
+      <ol class="steps">
+        <li><strong>Weingarten first.</strong> The member has the right to union representation in a meeting they reasonably believe could lead to discipline — <em>but they must ask for it.</em> Tell members: if called in, request a steward before answering questions.</li>
+        <li><strong>Get there, or send a steward.</strong> Don't let the member go in alone if it can be avoided.</li>
+        <li><strong>Your role in the room:</strong> you may consult with the member, ask for clarification of questions, and take notes. You are not a silent witness.</li>
+        <li><strong>Log it immediately after</strong> — create or update the case, record who was present, what was asked, and any commitments made.</li>
+      </ol>
+      <div class="callout red"><strong>Not sure if it's "just a conversation"?</strong> Treat it as if it could lead to discipline, get representation, and contact the Chief Steward right away. See <a href="#s13">Your rights &amp; the member's</a> for Weingarten, Garrity, and Loudermill.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s5" open>
+    <summary><span class="num">05</span> Raising a staffing / safety concern <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="steps">
+        <li><strong>Capture it</strong> — member submits a Quick/Full concern form, or you enter it from a verbal report.</li>
+        <li><strong>Create the concern case</strong> in the Staffing/Safety Concern Tracker; set the <em>concern type</em> (staffing ratio, unsafe assignment, equipment, coverage gap, other).</li>
+        <li><strong>Notify management / labor relations.</strong> Generate the notification from the dashboard; the goal is a written <em>acknowledgement of receipt</em> so the concern is on the record.</li>
+        <li><strong>Track acknowledgement.</strong> Unacknowledged cases are flagged. Mark <em>Acknowledged</em> when you receive confirmation.</li>
+        <li><strong>Aggregate repeat reports.</strong> If several members report the same concern, link their submissions to the one case so the count reflects how many people it affects.</li>
+        <li><strong>Escalate if needed.</strong> If it isn't acknowledged or resolved, escalate to a formal grievance — the dashboard creates the linked grievance for you.</li>
+      </ol>
+      <div class="callout green"><strong>The notification you generate for leadership</strong> summarizes unit, concern type, submission count, reporting period, and the issue — <em>without member names</em>. Names stay internal.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s6" open>
+    <summary><span class="num">06</span> Filing a formal grievance <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="steps">
+        <li><strong>Confirm a contractual basis</strong> — identify the CBA article(s) violated. Grievances follow the Article 16 procedure.</li>
+        <li><strong>Mind the timeline.</strong> Grievances are time-limited. Use the dashboard's Article 16 deadline calculator to set each step's due date — don't estimate from memory.</li>
+        <li><strong>Open the case</strong> — rename the folder to <code>G##-YYYY — [type] — LastName</code>, move it to Grievances, create the grievance record.</li>
+        <li><strong>Log every step and communication</strong> in the case event log so deadlines and obligations both directions stay current.</li>
+      </ol>
+      <div class="callout gold">A missed deadline can cost a grievance. When you file, immediately set the next step's deadline in the dashboard.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s7" open>
+    <summary><span class="num">07</span> Logging a workload review <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="steps">
+        <li><strong>Intake</strong> via the WLR form (<span class="mono">bit.ly/upamm-wlr</span>) or verbal entry.</li>
+        <li><strong>Open on the WLR track</strong> — <code>G##-YYYY — WLR — LastName</code>.</li>
+        <li><strong>Track timelines per the CBA</strong> and log progress and any management response in the case.</li>
+        <li><strong>If it escalates</strong> to a formal grievance, the folder keeps its number and drops the WLR tag.</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="sec" id="s8" open>
+    <summary><span class="num">08</span> Tracking a contractual deadline <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="steps">
+        <li><strong>Enter the deadline as a deadline</strong>, not just a note — so it shows up in deadline scans and the health banner.</li>
+        <li><strong>Link it to the case</strong> by grievance number so it appears on the case file.</li>
+        <li><strong>Give it a real due date</strong> from the CBA / Article 16 calculator, not a guess.</li>
+      </ol>
+      <div class="callout blue"><strong>Deadline hygiene:</strong> every contractual clock lives in the dashboard. If it's only in your head or your inbox, it will be missed.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s9" open>
+    <summary><span class="num">09</span> Logging a meeting <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="steps">
+        <li><strong>Notes</strong> — meeting notes are captured and saved to the shared Drive.</li>
+        <li><strong>Log the meeting in the dashboard</strong> — type, date, and grievance number if it's case-related.</li>
+        <li><strong>Pull out action items</strong> — anything management committed to goes to "Mgmt Owes Us"; anything the union committed to becomes a task.</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="sec" id="s10" open>
+    <summary><span class="num">10</span> Send the form, or fill it yourself? <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>Every member issue can start with a form. The question is whether the <em>member</em> fills it out or <em>you</em> do.</p>
+      <div class="callout green"><strong>Send the form to the member when…</strong> they can describe the issue clearly themselves, it isn't time-critical, and you want their own words on the record (helpful later for a grievance or concern).</div>
+      <div class="callout gold"><strong>Fill it out yourself (verbal intake) when…</strong> the member is upset or overwhelmed, it's urgent, it came up in a hallway conversation, or they'd rather talk than type. Capture it in the dashboard while it's fresh, then confirm the details back to them.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s11" open>
+    <summary><span class="num">11</span> What counts as a staffing / safety concern <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>Any situation where staffing, assignment, coverage, or resources put safe patient care — or a PA's ability to practice safely — at risk. Common examples:</p>
+      <ul>
+        <li><strong>Staffing ratio</strong> — too few PAs/providers for the patient load or acuity.</li>
+        <li><strong>Unsafe assignment</strong> — beyond a PA's competency, scope, or credentialed privileges, or without adequate supervision/support.</li>
+        <li><strong>Coverage gap</strong> — no coverage for breaks, call, cross-coverage, or a departed colleague's panel.</li>
+        <li><strong>Equipment / resources</strong> — missing, broken, or inadequate equipment or systems needed to deliver safe care.</li>
+        <li><strong>Pattern of understaffing</strong> — the same shortfall recurring over time, even if any single day seems manageable.</li>
+      </ul>
+      <div class="callout blue">A concern doesn't have to become a grievance. Many resolve by documenting the issue, requesting acknowledgement, and tracking whether it recurs. Log it either way — patterns are what build the case.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s12" open>
+    <summary><span class="num">12</span> Forms &amp; links <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>Short links (safe to share with members or print). Tap <em>Copy</em> to grab one:</p>
+      <div class="copyrow"><span class="cname">Staffing/Safety Concern — Quick</span> <span class="cval">bit.ly/upamm-ado-quick</span> <button class="copybtn" data-copy="https://bit.ly/upamm-ado-quick">Copy</button></div>
+      <div class="copyrow"><span class="cname">Staffing/Safety Concern — Full</span> <span class="cval">bit.ly/upamm-ado-full</span> <button class="copybtn" data-copy="https://bit.ly/upamm-ado-full">Copy</button></div>
+      <div class="copyrow"><span class="cname">Workload Review (WLR) Intake</span> <span class="cval">bit.ly/upamm-wlr</span> <button class="copybtn" data-copy="https://bit.ly/upamm-wlr">Copy</button></div>
+      <div class="copyrow"><span class="cname">Member Intake</span> <span class="cval">bit.ly/upamm-intake</span> <button class="copybtn" data-copy="https://bit.ly/upamm-intake">Copy</button></div>
+      <div class="callout gold" style="margin-top:14px">Use <strong>Quick</strong> for a fast report in the moment; use <strong>Full</strong> when there's time to capture detail. Both feed the Staffing/Safety Concern Tracker.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s13" open>
+    <summary><span class="num">13</span> Your rights &amp; the member's <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p style="font-size:13px;color:var(--muted)">Plain-language summaries for steward use — not legal advice. Michigan Medicine is a public employer (University of Michigan), which is why the public-employee protections below apply.</p>
+      <div class="rights">
+        <div class="right-card">
+          <h3>Weingarten</h3>
+          <div class="cite">NLRB v. J. Weingarten, Inc. (1975)</div>
+          <p>Right to union representation during an investigatory interview the member reasonably believes could lead to discipline. The employer doesn't have to offer it.</p>
+          <p class="do"><b>Do:</b> tell the member — ask for a steward <em>before</em> answering questions.</p>
+        </div>
+        <div class="right-card">
+          <h3>Garrity</h3>
+          <div class="cite">Garrity v. New Jersey (1967)</div>
+          <p>A public employee can't be forced to choose between self-incrimination and their job. Statements compelled under threat of discipline generally can't be used against them criminally.</p>
+          <p class="do"><b>Do:</b> if a matter could be criminal, stop and call the Chief Steward before the member answers.</p>
+        </div>
+        <div class="right-card">
+          <h3>Loudermill</h3>
+          <div class="cite">Cleveland Bd. of Ed. v. Loudermill (1985)</div>
+          <p>Public employees with a property interest in their job are entitled to due process before termination — notice of the charges and a chance to respond.</p>
+          <p class="do"><b>Do:</b> if termination is on the table, confirm the member got notice and a real chance to respond.</p>
+        </div>
+        <div class="right-card">
+          <h3>Veterans' Preference</h3>
+          <div class="cite">Michigan PA 205 of 1897 · MCL 35.401 et seq.</div>
+          <p>Honorably discharged veterans in Michigan public employment can't be removed or suspended except for official misconduct (with a right to a hearing), and get seniority preference if positions are reduced.</p>
+          <p class="do"><b>Do:</b> if the member is a veteran facing discipline or layoff, flag it to the Chief Steward — extra protections may apply.</p>
+        </div>
+      </div>
+      <div class="callout gold">These are starting points. For any specific situation, confirm details with the Chief Steward before advising a member.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s14" open>
+    <summary><span class="num">14</span> HIPAA hard stops <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <div class="callout red"><strong>No patient data — anywhere in the union system.</strong> No patient names, MRNs, DOBs, dates of service, diagnoses, or screenshots of the medical record in the dashboard, in Drive, in forms, in email, or in meeting notes.</div>
+      <p>Describe clinical situations generically: "a high-acuity patient," "a full panel," "an unstable admission" — never identifiable detail.</p>
+      <p><strong>If clinical documentation is genuinely needed as evidence</strong> (rare), don't collect or store it yourself. Stop and contact the Chief Steward for the proper, compliant channel. Protecting members means protecting patients' privacy too.</p>
+    </div>
+  </details>
+
+  <details class="sec" id="s15" open>
+    <summary><span class="num">15</span> Data hygiene — dashboard vs. Drive <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <p>Two homes, clear roles:</p>
+      <ul>
+        <li><strong>Dashboard</strong> — the structured record: cases, statuses, deadlines, event logs, obligations, concern tracking, tasks, meeting entries. Where you <em>work</em> a case.</li>
+        <li><strong>Drive</strong> — the document store: the actual files. Each case folder has standard subfolders (Submitted to Management, Received from Management, In-Process Drafts, Supporting Documents, Emails &amp; Correspondence, Meeting Notes).</li>
+      </ul>
+      <div class="callout blue">Rule of thumb: <strong>facts and timelines go in the dashboard; files go in Drive.</strong> Link the Drive documents from the case so both stay connected. And remember §14 — nothing with patient data goes in either.</div>
+    </div>
+  </details>
+
+  <details class="sec" id="s16" open>
+    <summary><span class="num">16</span> Common mistakes <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <ol class="mistakes">
+        <li>Letting a member walk into an investigatory meeting alone — Weingarten only works if representation is <em>requested</em>.</li>
+        <li>Tracking a contractual deadline in your head or inbox instead of entering it in the dashboard.</li>
+        <li>Reusing or skipping a case number — numbers are assigned once and never reused.</li>
+        <li>Putting patient-identifiable information anywhere in the union system.</li>
+        <li>Logging an issue as a note but never setting its concern type, track, or deadline — so it never surfaces in scans.</li>
+        <li>Including member names in a notification meant for leadership — keep names internal.</li>
+        <li>Resolving something verbally and never recording it, so the pattern is invisible next time.</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="sec" id="s17" open>
+    <summary><span class="num">17</span> Contacts <span class="chev">▶</span></summary>
+    <div class="sec-body">
+      <div class="copyrow"><span class="cname">Members (member-facing)</span> <span class="cval">upamm@upamm.org</span> <button class="copybtn" data-copy="upamm@upamm.org">Copy</button></div>
+      <div class="copyrow"><span class="cname">Steward operations</span> <span class="cval">chiefsteward@upamm.org</span> <button class="copybtn" data-copy="chiefsteward@upamm.org">Copy</button></div>
+      <div class="copyrow"><span class="cname">Steward team</span> <span class="cval">stewards@upamm.org</span> <button class="copybtn" data-copy="stewards@upamm.org">Copy</button></div>
+      <div class="callout blue" style="margin-top:14px">When a workflow above says "contact the Chief Steward," that's <a href="mailto:chiefsteward@upamm.org">chiefsteward@upamm.org</a>.</div>
+    </div>
+  </details>
+
+</div>
+
+<button id="totop" onclick="scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+
+<footer>
+  UPAMM — United Physician Assistants of Michigan Medicine · AFT Local 5297 · Steward Reference · Updated 2 July 2026. General guidance for stewards, not legal advice.
+</footer>
+
+<script>
+  // Expand / collapse all
+  function setAll(open){document.querySelectorAll('details.sec').forEach(function(d){d.open=open;});}
+  // Print with everything open, then restore
+  function printPage(){
+    var states=[].map.call(document.querySelectorAll('details.sec'),function(d){return d.open;});
+    setAll(true);
+    window.print();
+    document.querySelectorAll('details.sec').forEach(function(d,i){d.open=states[i];});
+  }
+  // Opening a section via a TOC / banner link should reveal it
+  function openTarget(){
+    if(location.hash){var t=document.querySelector(location.hash);if(t&&t.tagName==='DETAILS'){t.open=true;}}
+  }
+  window.addEventListener('hashchange',openTarget);
+  document.addEventListener('DOMContentLoaded',openTarget);
+  // Tap-to-copy
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.copybtn');if(!b)return;
+    var v=b.getAttribute('data-copy');
+    var done=function(){var o=b.textContent;b.textContent='✓ Copied';setTimeout(function(){b.textContent=o;},1200);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done).catch(done);}else{done();}
+  });
+  // Back-to-top visibility
+  var tt=document.getElementById('totop');
+  window.addEventListener('scroll',function(){tt.classList.toggle('show',window.scrollY>400);});
+</script>
+</body>
+</html>
